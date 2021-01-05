@@ -55,18 +55,34 @@ function removeAllPixels(parent) {
 
 function makePixelsSmart() {
     let pixels = Array.from(document.querySelectorAll('.pixel'));
-    pixels.forEach(pixel => pixel.addEventListener('mouseover', currentPalette))
+    pixels.forEach(pixel => pixel.addEventListener('mousedown', brushOnCanvas));
+    pixels.forEach(pixel => pixel.addEventListener('mouseup', brushOffCanvas));
+}
+
+function brushOnCanvas(bool) {
+    let pixels = Array.from(document.querySelectorAll('.pixel'));
+    pixels.forEach(pixel => pixel.addEventListener('mouseover', currentPalette));
+    canvas.addEventListener('mouseleave', brushOffCanvas); 
+}
+
+function brushOffCanvas(bool) {
+    let pixels = Array.from(document.querySelectorAll('.pixel'));
+    pixels.forEach(pixel => pixel.removeEventListener('mouseover', currentPalette));
+    canvas.removeEventListener('mouseleave', brushOffCanvas);
 }
 
 
 //Color Control
 function setPalette(event) {
+    palette.forEach(obj => obj.classList.remove('rainbow', 'eraser'));
     switch (event.target.dataset.color) {
         case 'rainbow':
+            event.target.classList.add('rainbow')
             currentPalette = rainbowPixel;
             makePixelsSmart();
             break;
         case 'eraser':
+            event.target.classList.add('eraser')
             currentPalette = erasePixel;
             makePixelsSmart()
             break;
@@ -79,6 +95,7 @@ function setPalette(event) {
 
 
 function colorPicker(e) {
+    palette.forEach(obj => obj.classList.remove('rainbow', 'eraser'));
     color = e.target.value;
     currentPalette = userPixel;
     makePixelsSmart()  
